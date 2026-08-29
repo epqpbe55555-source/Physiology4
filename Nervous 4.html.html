@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Smart · Autonomic Nervous System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1120;
+  --bg-2:#141833;
+  --surface:#1a1f3b;
+  --surface-2:#212850;
+  --border:#2e3560;
+  --text:#edeffa;
+  --text-dim:#9aa1c9;
+  --sym:#ff8a4c;
+  --sym-soft:rgba(255,138,76,0.14);
+  --para:#3fd3c6;
+  --para-soft:rgba(63,211,198,0.14);
+  --gold:#f2c14e;
+  --bad:#ff6b6b;
+  --good:#59d19e;
+  --radius:16px;
+  --font-d:'Fraunces', serif;
+  --font-b:'Inter', sans-serif;
+  --font-m:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(ellipse at top left, rgba(63,211,198,0.06), transparent 45%),
+    radial-gradient(ellipse at bottom right, rgba(255,138,76,0.07), transparent 45%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--font-b);
+  min-height:100vh;
+}
+::selection{background:var(--gold); color:#191308;}
+a{color:inherit;}
+button{font-family:inherit;}
+
+/* ---------- layout shell ---------- */
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:250px; flex-shrink:0;
+  background:linear-gradient(180deg, var(--bg-2), var(--bg));
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  position:sticky; top:0; height:100vh;
+  padding:26px 18px;
+}
+.brand{padding:0 6px 22px 6px; border-bottom:1px solid var(--border); margin-bottom:18px;}
+.brand-mark{
+  display:flex; align-items:center; gap:10px; margin-bottom:6px;
+}
+.brand-dot{
+  width:11px; height:11px; border-radius:50%;
+  background: conic-gradient(var(--sym) 0 50%, var(--para) 50% 100%);
+  box-shadow:0 0 0 4px rgba(255,255,255,0.03);
+}
+.brand h1{
+  font-family:var(--font-d); font-weight:700; font-size:1.32rem; letter-spacing:0.01em; margin:0;
+}
+.brand p{
+  font-family:var(--font-m); font-size:0.66rem; letter-spacing:0.09em; text-transform:uppercase;
+  color:var(--text-dim); margin:4px 0 0 0;
+}
+nav.sections{display:flex; flex-direction:column; gap:6px; flex:1;}
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding:11px 12px; border-radius:11px; cursor:pointer;
+  border:1px solid transparent; background:transparent;
+  color:var(--text-dim); text-align:left; width:100%;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav-item .num{
+  font-family:var(--font-m); font-size:0.68rem; color:inherit; opacity:.65;
+  width:20px;
+}
+.nav-item .label{font-size:0.92rem; font-weight:500;}
+.nav-item:hover{background:var(--surface); color:var(--text);}
+.nav-item.active{
+  background:var(--surface-2); color:var(--text);
+  border-color:var(--border);
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+.sidebar-foot{
+  border-top:1px solid var(--border); padding-top:14px; margin-top:14px;
+}
+.sidebar-foot .legend{display:flex; gap:14px; margin-bottom:12px; font-size:0.72rem; color:var(--text-dim);}
+.legend span{display:inline-flex; align-items:center; gap:6px;}
+.legend i{width:8px; height:8px; border-radius:50%; display:inline-block;}
+.legend .sym-i{background:var(--sym);}
+.legend .para-i{background:var(--para);}
+.copyright{font-family:var(--font-m); font-size:0.64rem; color:var(--text-dim); line-height:1.5;}
+
+main{flex:1; min-width:0; padding:38px 46px 70px; max-width:1180px;}
+.view{display:none; animation:rise .35s ease;}
+.view.active{display:block;}
+@keyframes rise{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+.view-head{margin-bottom:30px;}
+.eyebrow{
+  font-family:var(--font-m); font-size:0.7rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--gold); margin:0 0 8px 0;
+}
+.view-head h2{font-family:var(--font-d); font-size:2.1rem; margin:0 0 8px 0; font-weight:600;}
+.view-head p.sub{color:var(--text-dim); font-size:0.98rem; max-width:640px; margin:0; line-height:1.55;}
+
+/* ---------- shared card ---------- */
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:20px 22px;
+}
+
+/* ================= HERO / OVERVIEW ================= */
+.hero{
+  display:grid; grid-template-columns:1.15fr 0.85fr; gap:28px;
+  align-items:center;
+  background:linear-gradient(135deg, var(--surface), var(--bg-2));
+  border:1px solid var(--border); border-radius:20px;
+  padding:30px 32px; margin-bottom:34px;
+  overflow:hidden; position:relative;
+}
+.hero h1{
+  font-family:var(--font-d); font-size:2.5rem; line-height:1.08; margin:0 0 12px 0; font-weight:700;
+}
+.hero h1 em{font-style:italic; color:var(--gold);}
+.hero p{color:var(--text-dim); max-width:460px; line-height:1.6; margin:0;}
+.synapse-wrap{position:relative; height:180px;}
+.synapse-wrap svg{width:100%; height:100%;}
+@media (prefers-reduced-motion:no-preference){
+  .vesicle{animation:travel 2.6s ease-in-out infinite;}
+  .vesicle.v2{animation-delay:.9s;}
+  .vesicle.v3{animation-delay:1.7s;}
+}
+@keyframes travel{
+  0%{transform:translateX(0); opacity:0;}
+  8%{opacity:1;}
+  55%{transform:translateX(78px); opacity:1;}
+  70%{opacity:0;}
+  100%{transform:translateX(78px); opacity:0;}
+}
+
+.section-title{font-family:var(--font-d); font-size:1.25rem; margin:0 0 14px 0; font-weight:600;}
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+@media(max-width:920px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+
+.law-card{border-left:3px solid var(--border); padding-left:14px; margin-bottom:16px;}
+.law-card.sym{border-color:var(--sym);}
+.law-card.para{border-color:var(--para);}
+.law-card h4{margin:0 0 5px 0; font-size:0.95rem; font-family:var(--font-b); font-weight:600;}
+.law-card p{margin:0; color:var(--text-dim); font-size:0.87rem; line-height:1.55;}
+.tag{
+  display:inline-block; font-family:var(--font-m); font-size:0.62rem; letter-spacing:.06em; text-transform:uppercase;
+  padding:2px 8px; border-radius:20px; margin-right:6px; margin-bottom:8px;
+}
+.tag.sym{background:var(--sym-soft); color:var(--sym);}
+.tag.para{background:var(--para-soft); color:var(--para);}
+.tag.both{background:rgba(242,193,78,0.14); color:var(--gold);}
+
+.compare-table{width:100%; border-collapse:collapse; font-size:0.87rem;}
+.compare-table th, .compare-table td{
+  text-align:left; padding:10px 12px; border-bottom:1px solid var(--border);
+}
+.compare-table th{color:var(--text-dim); font-weight:500; font-family:var(--font-m); font-size:0.68rem; text-transform:uppercase; letter-spacing:.06em;}
+.compare-table td.sym-col{color:var(--sym);}
+.compare-table td.para-col{color:var(--para);}
+.section-block{margin-bottom:30px;}
+
+/* ================= DIAGRAMS ================= */
+.diagram-card{margin-bottom:26px;}
+.diagram-card h3{font-family:var(--font-d); font-size:1.15rem; margin:0 0 4px 0;}
+.diagram-card .hint{color:var(--text-dim); font-size:0.82rem; margin:0 0 16px 0;}
+
+/* toggle switch */
+.toggle-row{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+.toggle{
+  position:relative; width:180px; height:38px; border-radius:20px;
+  background:var(--bg); border:1px solid var(--border); cursor:pointer;
+  display:flex; align-items:center; padding:3px;
+}
+.toggle .knob{
+  position:absolute; top:3px; left:3px; width:calc(50% - 3px); height:calc(100% - 6px);
+  border-radius:16px; background:var(--sym); transition:left .25s ease, background .25s ease;
+  z-index:0;
+}
+.toggle.is-para .knob{left:calc(50% + 0px); background:var(--para);}
+.toggle span{
+  flex:1; text-align:center; z-index:1; font-size:0.78rem; font-weight:600; color:var(--bg);
+}
+.toggle span.dim{color:var(--text-dim);}
+
+/* pathway diagram */
+.pathway{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:26px 10px; position:relative; flex-wrap:wrap;
+}
+.node{
+  background:var(--bg-2); border:1px solid var(--border); border-radius:12px;
+  padding:14px 16px; text-align:center; min-width:120px; position:relative; z-index:1;
+}
+.node .n-title{font-weight:600; font-size:0.88rem;}
+.node .n-sub{font-size:0.72rem; color:var(--text-dim); margin-top:3px;}
+.arrow-line{flex:1; height:2px; background:var(--border); position:relative; min-width:40px;}
+.arrow-line .nt-pill{
+  position:absolute; top:-13px; left:50%; transform:translateX(-50%);
+  font-family:var(--font-m); font-size:0.68rem; padding:3px 9px; border-radius:20px;
+  white-space:nowrap;
+}
+.pill-ach{background:rgba(242,193,78,0.16); color:var(--gold); border:1px solid rgba(242,193,78,.3);}
+.pill-ne{background:var(--sym-soft); color:var(--sym); border:1px solid rgba(255,138,76,.3);}
+
+/* accordion steps */
+.steps{display:flex; flex-direction:column; gap:8px;}
+.step{
+  border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--bg-2);
+}
+.step-head{
+  display:flex; align-items:center; gap:12px; padding:13px 16px; cursor:pointer; user-select:none;
+}
+.step-head .step-num{
+  font-family:var(--font-m); font-size:0.75rem; width:26px; height:26px; border-radius:50%;
+  background:var(--surface-2); display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.step-head .step-title{font-weight:600; font-size:0.9rem; flex:1;}
+.step-head .chev{transition:transform .2s ease; color:var(--text-dim);}
+.step.open .chev{transform:rotate(180deg);}
+.step-body{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+.step-body p{margin:0; padding:0 16px 16px 54px; color:var(--text-dim); font-size:0.85rem; line-height:1.6;}
+.step.open .step-body{max-height:200px;}
+
+/* receptor tree */
+.tree{display:flex; flex-direction:column; align-items:center; gap:8px;}
+.tree-root{
+  font-family:var(--font-m); font-size:0.78rem; padding:8px 18px; border-radius:20px;
+  background:var(--surface-2); border:1px solid var(--border);
+}
+.tree-branches{display:flex; gap:14px; margin-top:6px; flex-wrap:wrap; justify-content:center;}
+.branch-btn{
+  padding:9px 16px; border-radius:10px; border:1px solid var(--border); background:var(--bg-2);
+  color:var(--text); cursor:pointer; font-size:0.85rem; font-weight:600;
+}
+.branch-btn.active{border-color:var(--gold); background:rgba(242,193,78,0.1); color:var(--gold);}
+.leaf-box{
+  margin-top:16px; display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;
+}
+.leaf{
+  background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:12px 14px;
+}
+.leaf b{display:block; font-size:0.9rem; margin-bottom:4px;}
+.leaf span{font-size:0.78rem; color:var(--text-dim); line-height:1.5;}
+
+/* organ effect explorer */
+.organ-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; margin-bottom:16px;}
+.organ-chip{
+  padding:10px 8px; text-align:center; border-radius:10px; border:1px solid var(--border);
+  background:var(--bg-2); cursor:pointer; font-size:0.82rem; font-weight:600;
+}
+.organ-chip.active{border-color:var(--gold); background:rgba(242,193,78,0.1);}
+.organ-detail{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.organ-panel{border-radius:12px; padding:16px; border:1px solid var(--border);}
+.organ-panel.sym{background:var(--sym-soft); border-color:rgba(255,138,76,.35);}
+.organ-panel.para{background:var(--para-soft); border-color:rgba(63,211,198,.35);}
+.organ-panel h5{margin:0 0 6px 0; font-family:var(--font-m); font-size:0.72rem; text-transform:uppercase; letter-spacing:.06em;}
+.organ-panel.sym h5{color:var(--sym);}
+.organ-panel.para h5{color:var(--para);}
+.organ-panel p{margin:0; font-size:0.88rem; line-height:1.5;}
+
+/* ================= MINI MAP ================= */
+.map-wrap{display:grid; grid-template-columns:1fr 380px; gap:24px;}
+@media(max-width:920px){.map-wrap{grid-template-columns:1fr;}}
+.map-canvas{
+  position:relative; aspect-ratio:1/1; max-width:560px;
+  background:radial-gradient(circle at center, var(--surface-2), var(--bg-2));
+  border:1px solid var(--border); border-radius:50%;
+}
+.map-canvas svg{position:absolute; inset:0; width:100%; height:100%;}
+.map-canvas svg line{stroke:var(--border); stroke-width:1;}
+.map-canvas svg line.lit{stroke:var(--gold); stroke-width:1.6;}
+.map-center{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:92px; height:92px; border-radius:50%;
+  background:linear-gradient(135deg, var(--sym), var(--para));
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  font-family:var(--font-d); font-weight:700; font-size:0.95rem; color:#0e1120; z-index:2;
+  box-shadow:0 0 0 6px rgba(255,255,255,0.03);
+}
+.map-node{
+  position:absolute; transform:translate(-50%,-50%);
+  width:96px; padding:9px 10px; border-radius:12px; text-align:center; cursor:pointer;
+  background:var(--bg-2); border:1px solid var(--border); font-size:0.75rem; font-weight:600;
+  z-index:2; transition:border-color .15s ease, background .15s ease;
+}
+.map-node:hover{border-color:var(--gold);}
+.map-node.active{background:rgba(242,193,78,0.14); border-color:var(--gold); color:var(--gold);}
+.map-detail h4{font-family:var(--font-d); margin:0 0 10px 0; font-size:1.2rem;}
+.map-detail ul{margin:0; padding-left:18px; color:var(--text-dim); font-size:0.87rem; line-height:1.7;}
+.map-detail{min-height:280px;}
+
+/* ================= FLASHCARDS ================= */
+.fc-controls{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:12px;}
+.chip-row{display:flex; gap:8px; flex-wrap:wrap;}
+.chip{
+  padding:7px 14px; border-radius:20px; border:1px solid var(--border); background:var(--bg-2);
+  font-size:0.78rem; cursor:pointer; color:var(--text-dim);
+}
+.chip.active{background:rgba(242,193,78,0.14); border-color:var(--gold); color:var(--gold);}
+.fc-actions{display:flex; gap:8px; align-items:center;}
+.btn{
+  padding:9px 16px; border-radius:10px; border:1px solid var(--border); background:var(--bg-2);
+  color:var(--text); cursor:pointer; font-size:0.83rem; font-weight:600;
+}
+.btn:hover{border-color:var(--gold);}
+.btn.primary{background:var(--gold); color:#191308; border-color:var(--gold);}
+.btn.primary:hover{opacity:.9;}
+.btn:disabled{opacity:.4; cursor:not-allowed;}
+
+.fc-stage{display:flex; flex-direction:column; align-items:center; gap:16px;}
+.flashcard{
+  width:100%; max-width:560px; height:280px; perspective:1400px; cursor:pointer;
+}
+.flashcard-inner{
+  position:relative; width:100%; height:100%; transition:transform .5s cubic-bezier(.4,.2,.2,1);
+  transform-style:preserve-3d;
+}
+.flashcard.flipped .flashcard-inner{transform:rotateY(180deg);}
+.fc-face{
+  position:absolute; inset:0; backface-visibility:hidden; border-radius:18px;
+  border:1px solid var(--border); padding:28px; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; text-align:center; gap:14px;
+}
+.fc-front{background:linear-gradient(160deg, var(--surface), var(--bg-2));}
+.fc-back{
+  background:linear-gradient(160deg, var(--surface-2), var(--bg-2)); transform:rotateY(180deg);
+}
+.fc-face .fc-tag{font-family:var(--font-m); font-size:0.65rem; letter-spacing:.08em; text-transform:uppercase; color:var(--gold);}
+.fc-face p{font-size:1.08rem; line-height:1.55; margin:0; font-weight:500;}
+.fc-face .fc-hint{position:absolute; bottom:14px; font-size:0.7rem; color:var(--text-dim);}
+.fc-progress{font-family:var(--font-m); font-size:0.8rem; color:var(--text-dim);}
+.fc-nav{display:flex; gap:10px;}
+
+/* ================= QUIZ ================= */
+.quiz-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;}
+.quiz-meter{flex:1; min-width:200px; height:8px; background:var(--bg-2); border-radius:6px; overflow:hidden; border:1px solid var(--border);}
+.quiz-meter-fill{height:100%; width:0%; background:linear-gradient(90deg, var(--sym), var(--para)); transition:width .3s ease;}
+.quiz-score{font-family:var(--font-m); font-size:0.85rem; color:var(--text-dim);}
+.q-card{margin-bottom:16px;}
+.q-num{font-family:var(--font-m); font-size:0.7rem; color:var(--gold); margin-bottom:6px; text-transform:uppercase; letter-spacing:.06em;}
+.q-text{font-size:1.05rem; font-weight:600; margin:0 0 16px 0; line-height:1.5;}
+.opt-list{display:flex; flex-direction:column; gap:10px;}
+.opt{
+  display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px;
+  border:1px solid var(--border); background:var(--bg-2); cursor:pointer; font-size:0.9rem;
+}
+.opt:hover{border-color:var(--text-dim);}
+.opt .letter{
+  font-family:var(--font-m); font-size:0.72rem; width:24px; height:24px; border-radius:50%;
+  background:var(--surface-2); display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.opt.correct{border-color:var(--good); background:rgba(89,209,158,0.12);}
+.opt.wrong{border-color:var(--bad); background:rgba(255,107,107,0.12);}
+.opt.disabled{cursor:default;}
+.quiz-summary{text-align:center; padding:40px 20px;}
+.quiz-summary h3{font-family:var(--font-d); font-size:1.8rem; margin:0 0 10px 0;}
+.quiz-summary p{color:var(--text-dim); margin:0 0 20px 0;}
+.quiz-actions{display:flex; gap:12px; justify-content:center; margin-top:18px;}
+
+/* footer on each page */
+.page-copyright{
+  margin-top:44px; padding-top:16px; border-top:1px solid var(--border);
+  font-family:var(--font-m); font-size:0.7rem; color:var(--text-dim); text-align:center;
+}
+
+/* mobile sidebar */
+.mobile-bar{display:none;}
+@media(max-width:820px){
+  .shell{flex-direction:column;}
+  .sidebar{
+    position:relative; width:100%; height:auto; flex-direction:row; align-items:center;
+    padding:14px 16px; overflow-x:auto;
+  }
+  .brand{border-bottom:none; padding:0; margin:0 14px 0 0; border-right:1px solid var(--border); padding-right:14px;}
+  nav.sections{flex-direction:row;}
+  .nav-item .label{display:none;}
+  .sidebar-foot{display:none;}
+  main{padding:26px 20px 60px;}
+  .hero{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <span class="brand-dot"></span>
+        <h1>Study Smart</h1>
+      </div>
+      <p>Autonomic Nervous System</p>
+    </div>
+
+    <nav class="sections">
+      <button class="nav-item active" data-target="overview"><span class="num">01</span><span class="label">Overview</span></button>
+      <button class="nav-item" data-target="diagrams"><span class="num">02</span><span class="label">Interactive Diagrams</span></button>
+      <button class="nav-item" data-target="minimap"><span class="num">03</span><span class="label">Mini Map</span></button>
+      <button class="nav-item" data-target="flashcards"><span class="num">04</span><span class="label">Flash Cards</span></button>
+      <button class="nav-item" data-target="quiz"><span class="num">05</span><span class="label">Quiz Bank</span></button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="legend">
+        <span><i class="sym-i"></i>Sympathetic</span>
+        <span><i class="para-i"></i>Parasympathetic</span>
+      </div>
+      <div class="copyright">© 2026 Anmar Taha.<br>All rights reserved.</div>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ============ 1. OVERVIEW ============ -->
+    <section class="view active" id="overview">
+      <div class="hero">
+        <div>
+          <h1>Master the ANS<br> without the <em>lecture</em>.</h1>
+          <p>Every law, pathway, transmitter and receptor from the Autonomic Nervous System physiology lecture, condensed into the facts examiners actually ask about.</p>
+        </div>
+        <div class="synapse-wrap">
+          <svg viewBox="0 0 220 140" fill="none">
+            <path d="M10 70 C 40 70, 40 30, 70 30" stroke="#3a4074" stroke-width="3" fill="none"/>
+            <path d="M10 70 C 40 70, 40 110, 70 110" stroke="#3a4074" stroke-width="3" fill="none"/>
+            <circle cx="8" cy="70" r="7" fill="#2e355c"/>
+            <path d="M78 25 Q 96 70 78 115 Q 66 70 78 25 Z" fill="#212850" stroke="#2e355c"/>
+            <line x1="100" y1="70" x2="185" y2="70" stroke="#3a4074" stroke-width="3"/>
+            <rect x="185" y="42" width="26" height="56" rx="10" fill="#212850" stroke="#2e355c"/>
+            <circle class="vesicle v1" cx="108" cy="70" r="4" fill="var(--gold)"/>
+            <circle class="vesicle v2" cx="108" cy="70" r="4" fill="var(--para)"/>
+            <circle class="vesicle v3" cx="108" cy="70" r="4" fill="var(--sym)"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="section-title">The core law</h3>
+        <div class="card">
+          <div class="law-card">
+            <h4>One nervous system, two outflows</h4>
+            <p>CNS (brain + spinal cord) → PNS (cranial + spinal nerves) → splits into <b>Somatic</b> (voluntary muscle) and <b>Autonomic</b> (involuntary organs) → Autonomic splits into <b>Sympathetic</b> and <b>Parasympathetic</b>.</p>
+          </div>
+          <div class="law-card sym">
+            <span class="tag sym">Sympathetic</span>
+            <h4>"Fight, flight or fright"</h4>
+            <p>Response to stress. Ganglia mostly paravertebral (near the spinal cord). Short myelinated preganglionic fiber, long unmyelinated postganglionic fiber. One preganglionic neuron synapses on <b>many</b> postganglionic neurons → diffuse, widespread response.</p>
+          </div>
+          <div class="law-card para">
+            <span class="tag para">Parasympathetic</span>
+            <h4>"Rest and digest" — essential for life</h4>
+            <p>Conserves energy, maintains baseline function. Ganglia close to or inside the target organ. Long myelinated preganglionic fiber, short unmyelinated postganglionic fiber. Usually <b>one-to-one</b> synapse → discrete, localized response.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="section-title">Anatomy at a glance</h3>
+        <div class="card">
+          <table class="compare-table">
+            <thead><tr><th>Feature</th><th>Sympathetic</th><th>Parasympathetic</th></tr></thead>
+            <tbody>
+              <tr><td>Ganglia location</td><td class="sym-col">Paravertebral chain (some prevertebral)</td><td class="para-col">Close to / within the organ</td></tr>
+              <tr><td>Preganglionic fiber</td><td class="sym-col">Myelinated, shorter</td><td class="para-col">Myelinated, long</td></tr>
+              <tr><td>Postganglionic fiber</td><td class="sym-col">Long, unmyelinated</td><td class="para-col">Short, unmyelinated</td></tr>
+              <tr><td>CNS exit level</td><td class="sym-col">Thoracic &amp; lumbar (thoraco-lumbar)</td><td class="para-col">Cranial &amp; sacral (cranio-sacral)</td></tr>
+              <tr><td>Synapse pattern</td><td class="sym-col">1 pre → many post (diffuse)</td><td class="para-col">1 pre → 1 post (discrete)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid-2 section-block">
+        <div class="card">
+          <h3 class="section-title">Neurotransmitters</h3>
+          <div class="law-card"><h4>Preganglionic — both divisions</h4><p><b>Acetylcholine (ACh)</b> acting on nicotinic receptors of the postganglionic neuron.</p></div>
+          <div class="law-card para"><h4>Postganglionic — Parasympathetic</h4><p><b>Acetylcholine (ACh)</b> acting on muscarinic receptors of the effector organ.</p></div>
+          <div class="law-card sym"><h4>Postganglionic — Sympathetic</h4><p><b>Norepinephrine (NE)</b> — <i>except</i> sweat glands and blood vessels of skeletal muscle, where it is ACh.</p></div>
+          <div class="law-card"><h4>Adrenal medulla</h4><p>Chromaffin cells release mainly <b>Epinephrine</b> directly into the blood, functioning as a sympathetic postganglionic "neuron".</p></div>
+        </div>
+        <div class="card">
+          <h3 class="section-title">Receptors</h3>
+          <div class="law-card"><h4>Nicotinic (ionotropic)</h4><p>Ligand-gated ion channel → Na⁺/Ca²⁺ influx → depolarization. Found at all autonomic ganglia, the NMJ (different subtype), CNS and immune cells.</p></div>
+          <div class="law-card"><h4>Muscarinic (metabotropic)</h4><p>G protein-coupled. M1 = ganglia, M2 = heart, M3 = glands &amp; smooth muscle, M4/M5 mostly CNS.</p></div>
+          <div class="law-card"><h4>Adrenergic</h4><p>α1 (A/B/D) and α2 (A/B/C) — 3 subtypes each; β1, β2, β3. NE and Epi can activate more than one type.</p></div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="section-title">Functional rules</h3>
+        <div class="card">
+          <div class="grid-2">
+            <div class="law-card"><h4>Reciprocal balance</h4><p>The two divisions usually oppose each other in the same organ: if one inhibits an effect, the other enhances it.</p></div>
+            <div class="law-card"><h4>Exceptions exist</h4><p>Some effectors receive <b>only sympathetic</b> innervation: blood vessels, spleen, and piloerector muscles.</p></div>
+            <div class="law-card sym"><h4>Sympathetic-dominant effects</h4><p>↑ Heart rate &amp; BP, bronchodilation, pupil dilation, piloerection, blood flow redirected to skeletal muscle, bladder neck contracts.</p></div>
+            <div class="law-card para"><h4>Parasympathetic-dominant effects</h4><p>↓ Heart rate &amp; BP, activates GIT motility &amp; secretion, bronchoconstriction, pupil constriction, bladder/rectum emptying, bladder neck relaxes.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="page-copyright">© 2026 Anmar Taha — Study Smart</div>
+    </section>
+
+    <!-- ============ 2. DIAGRAMS ============ -->
+    <section class="view" id="diagrams">
+      <div class="view-head">
+        <p class="eyebrow">Section 02</p>
+        <h2>Interactive Diagrams</h2>
+        <p class="sub">Every figure from the lecture, rebuilt so you can click, toggle and expand instead of just staring at it.</p>
+      </div>
+
+      <div class="card diagram-card">
+        <h3>1 · Nervous system hierarchy</h3>
+        <p class="hint">Click any box to read what it does.</p>
+        <div id="hierarchy" class="tree" style="align-items:stretch;">
+          <div class="leaf-box" id="hierarchy-boxes"></div>
+        </div>
+        <div id="hierarchy-detail" class="leaf" style="margin-top:14px; display:none;"></div>
+      </div>
+
+      <div class="card diagram-card">
+        <h3>2 · Preganglionic → postganglionic pathway</h3>
+        <p class="hint">Toggle the division to see how the neurotransmitters change along the path.</p>
+        <div class="toggle-row">
+          <div class="toggle" id="pathwayToggle">
+            <div class="knob"></div>
+            <span>Sympathetic</span>
+            <span class="dim">Parasympathetic</span>
+          </div>
+        </div>
+        <div class="pathway" id="pathwayDiagram"></div>
+      </div>
+
+      <div class="card diagram-card">
+        <h3>3 · Cholinergic &amp; adrenergic receptor families</h3>
+        <p class="hint">Pick a receptor family, then a branch, to reveal its subtypes.</p>
+        <div class="tree">
+          <div class="tree-root">Autonomic Receptors</div>
+          <div class="tree-branches" id="receptorFamily">
+            <button class="branch-btn active" data-fam="cholinergic">Cholinergic</button>
+            <button class="branch-btn" data-fam="adrenergic">Adrenergic</button>
+          </div>
+          <div class="tree-branches" id="receptorBranch"></div>
+          <div class="leaf-box" id="receptorLeaves"></div>
+        </div>
+      </div>
+
+      <div class="card diagram-card">
+        <h3>4 · Autonomic effects, organ by organ</h3>
+        <p class="hint">Select an organ to compare sympathetic vs parasympathetic action side by side.</p>
+        <div class="organ-grid" id="organGrid"></div>
+        <div class="organ-detail" id="organDetail"></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card diagram-card">
+          <h3>5 · Acetylcholine life cycle</h3>
+          <p class="hint">Tap each stage.</p>
+          <div class="steps" id="achSteps"></div>
+        </div>
+        <div class="card diagram-card">
+          <h3>6 · Norepinephrine life cycle</h3>
+          <p class="hint">Tap each stage.</p>
+          <div class="steps" id="neSteps"></div>
+        </div>
+      </div>
+
+      <div class="card diagram-card">
+        <h3>7 · Vesicle release at the nerve terminal</h3>
+        <p class="hint">The universal mechanism behind every step above.</p>
+        <div class="steps" id="releaseSteps"></div>
+      </div>
+      <div class="page-copyright">© 2026 Anmar Taha — Study Smart</div>
+    </section>
+
+    <!-- ============ 3. MINI MAP ============ -->
+    <section class="view" id="minimap">
+      <div class="view-head">
+        <p class="eyebrow">Section 03</p>
+        <h2>Mini Map</h2>
+        <p class="sub">One radial view of the whole lecture. Click a node for the last-minute-revision version of that topic.</p>
+      </div>
+      <div class="map-wrap">
+        <div class="map-canvas" id="mapCanvas">
+          <svg viewBox="0 0 100 100" id="mapLines"></svg>
+          <div class="map-center">ANS</div>
+        </div>
+        <div class="card map-detail" id="mapDetail">
+          <p class="sub">Select a node on the map to preview its summary here.</p>
+        </div>
+      </div>
+      <div class="page-copyright">© 2026 Anmar Taha — Study Smart</div>
+    </section>
+
+    <!-- ============ 4. FLASHCARDS ============ -->
+    <section class="view" id="flashcards">
+      <div class="view-head">
+        <p class="eyebrow">Section 04</p>
+        <h2>Flash Cards</h2>
+        <p class="sub">Full-course recall drill. Filter by topic, flip to check yourself, shuffle to break memorized order.</p>
+      </div>
+
+      <div class="fc-controls">
+        <div class="chip-row" id="fcFilters"></div>
+        <div class="fc-actions">
+          <button class="btn" id="fcShuffle">Shuffle</button>
+        </div>
+      </div>
+
+      <div class="fc-stage">
+        <div class="flashcard" id="flashcard">
+          <div class="flashcard-inner">
+            <div class="fc-face fc-front">
+              <span class="fc-tag" id="fcTagFront">Topic</span>
+              <p id="fcFront">Question</p>
+              <span class="fc-hint">Tap to flip</span>
+            </div>
+            <div class="fc-face fc-back">
+              <span class="fc-tag" id="fcTagBack">Topic</span>
+              <p id="fcBack">Answer</p>
+              <span class="fc-hint">Tap to flip back</span>
+            </div>
+          </div>
+        </div>
+        <div class="fc-progress" id="fcProgress">1 / 1</div>
+        <div class="fc-nav">
+          <button class="btn" id="fcPrev">← Prev</button>
+          <button class="btn primary" id="fcFlip">Flip card</button>
+          <button class="btn" id="fcNext">Next →</button>
+        </div>
+      </div>
+      <div class="page-copyright">© 2026 Anmar Taha — Study Smart</div>
+    </section>
+
+    <!-- ============ 5. QUIZ ============ -->
+    <section class="view" id="quiz">
+      <div class="view-head">
+        <p class="eyebrow">Section 05</p>
+        <h2>Quiz Bank</h2>
+        <p class="sub">35 mixed questions. Answer choices are re-shuffled every time you run the quiz, so the correct letter is never predictable.</p>
+      </div>
+
+      <div class="quiz-top">
+        <div class="quiz-meter"><div class="quiz-meter-fill" id="quizMeter"></div></div>
+        <div class="quiz-score" id="quizScoreLine">Question 1 of 35 · Score 0</div>
+      </div>
+
+      <div id="quizArea"></div>
+      <div class="page-copyright">© 2026 Anmar Taha — Study Smart</div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   NAVIGATION
+============================================================ */
+document.querySelectorAll('.nav-item').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.target).classList.add('active');
+    window.scrollTo({top:0, behavior:'instant'});
+  });
+});
+
+/* ============================================================
+   DATA: hierarchy
+============================================================ */
+const hierarchy = [
+  {t:"Central Nervous System (CNS)", d:"Brain + spinal cord. Responsible for sensory processing, storing memories and emotions."},
+  {t:"Peripheral Nervous System (PNS)", d:"Cranial + spinal nerves. Carries messages to and from the CNS and the rest of the body."},
+  {t:"Somatic Nervous System", d:"Controls voluntary movement — skeletal muscle contraction."},
+  {t:"Autonomic Nervous System", d:"Controls involuntary actions: heartbeat, pupil size, digestion, gland secretion."},
+  {t:"Sympathetic Division", d:"Fight-or-flight response; mobilizes the body under stress."},
+  {t:"Parasympathetic Division", d:"Rest-and-digest response; conserves energy and maintains baseline function."},
+];
+const hBoxes = document.getElementById('hierarchy-boxes');
+hierarchy.forEach((h,i)=>{
+  const el = document.createElement('div');
+  el.className='leaf'; el.style.cursor='pointer';
+  el.innerHTML = `<b>${h.t}</b><span>Tap for detail</span>`;
+  el.addEventListener('click', ()=>{
+    const det = document.getElementById('hierarchy-detail');
+    det.style.display='block';
+    det.innerHTML = `<b>${h.t}</b><span>${h.d}</span>`;
+  });
+  hBoxes.appendChild(el);
+});
+
+/* ============================================================
+   PATHWAY DIAGRAM
+============================================================ */
+const pathwayData = {
+  sym: {
+    label:"Sympathetic",
+    nodes:["CNS\n(thoraco-lumbar)","Paravertebral\nganglion","Target organ"],
+    nts:["ACh · nicotinic","NE · adrenergic*"]
+  },
+  para: {
+    label:"Parasympathetic",
+    nodes:["CNS\n(cranio-sacral)","Terminal ganglion\n(in/near organ)","Target organ"],
+    nts:["ACh · nicotinic","ACh · muscarinic"]
+  }
+};
+function renderPathway(mode){
+  const d = pathwayData[mode];
+  const wrap = document.getElementById('pathwayDiagram');
+  wrap.innerHTML = `
+    <div class="node"><div class="n-title">${d.nodes[0].split('\n')[0]}</div><div class="n-sub">${d.nodes[0].split('\n')[1]||''}</div></div>
+    <div class="arrow-line"><div class="nt-pill pill-ach">${d.nts[0]}</div></div>
+    <div class="node"><div class="n-title">${d.nodes[1].split('\n')[0]}</div><div class="n-sub">${d.nodes[1].split('\n')[1]||''}</div></div>
+    <div class="arrow-line"><div class="nt-pill ${mode==='sym'?'pill-ne':'pill-ach'}">${d.nts[1]}</div></div>
+    <div class="node"><div class="n-title">${d.nodes[2]}</div><div class="n-sub">effector response</div></div>
+  `;
+}
+renderPathway('sym');
+const pathwayToggle = document.getElementById('pathwayToggle');
+let pathwayMode='sym';
+pathwayToggle.addEventListener('click', ()=>{
+  pathwayMode = pathwayMode==='sym'?'para':'sym';
+  pathwayToggle.classList.toggle('is-para', pathwayMode==='para');
+  pathwayToggle.querySelectorAll('span')[0].classList.toggle('dim', pathwayMode!=='sym');
+  pathwayToggle.querySelectorAll('span')[1].classList.toggle('dim', pathwayMode!=='para');
+  renderPathway(pathwayMode);
+});
+
+/* ============================================================
+   RECEPTOR TREE
+============================================================ */
+const receptorData = {
+  cholinergic:{
+    branches:{
+      Nicotinic:[
+        {b:"Neuronal — Ganglia", s:"Autonomic ganglia, similar type to CNS/immune cells; different from NMJ subtype."},
+        {b:"Neuronal — CNS / Immune", s:"Nicotinic receptors also present in the central nervous system and on immune cells."},
+        {b:"Non-neuronal", s:"Skeletal muscle (neuromuscular junction) — a distinct nicotinic subtype."}
+      ],
+      Muscarinic:[
+        {b:"M1", s:"Autonomic ganglia — modulates the effect of nicotinic receptor activation."},
+        {b:"M2", s:"Heart — mediates parasympathetic slowing of heart rate."},
+        {b:"M3", s:"Glands and smooth muscle."},
+        {b:"M4 / M5", s:"Function less defined; along with all subtypes, also present in CNS."}
+      ]
+    }
+  },
+  adrenergic:{
+    branches:{
+      "α1 receptors":[
+        {b:"α1A", s:"Subtype of α1 adrenergic receptor."},
+        {b:"α1B", s:"Subtype of α1 adrenergic receptor."},
+        {b:"α1D", s:"Subtype of α1 adrenergic receptor."}
+      ],
+      "α2 receptors":[
+        {b:"α2A", s:"Subtype of α2 adrenergic receptor."},
+        {b:"α2B", s:"Subtype of α2 adrenergic receptor."},
+        {b:"α2C", s:"Subtype of α2 adrenergic receptor."}
+      ],
+      "β receptors":[
+        {b:"β1", s:"Adrenergic receptor subtype, notably cardiac."},
+        {b:"β2", s:"Adrenergic receptor subtype, notably smooth muscle/bronchial."},
+        {b:"β3", s:"Adrenergic receptor subtype."}
+      ]
+    }
+  }
+};
+const famBtns = document.querySelectorAll('#receptorFamily .branch-btn');
+const branchWrap = document.getElementById('receptorBranch');
+const leafWrap = document.getElementById('receptorLeaves');
+function renderReceptorBranches(fam){
+  branchWrap.innerHTML='';
+  const branches = Object.keys(receptorData[fam].branches);
+  branches.forEach((b,i)=>{
+    const btn=document.createElement('button');
+    btn.className='branch-btn'+(i===0?' active':'');
+    btn.textContent=b;
+    btn.addEventListener('click', ()=>{
+      branchWrap.querySelectorAll('.branch-btn').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active');
+      renderReceptorLeaves(fam,b);
+    });
+    branchWrap.appendChild(btn);
+  });
+  renderReceptorLeaves(fam, branches[0]);
+}
+function renderReceptorLeaves(fam, branch){
+  leafWrap.innerHTML='';
+  receptorData[fam].branches[branch].forEach(item=>{
+    const el=document.createElement('div');
+    el.className='leaf';
+    el.innerHTML=`<b>${item.b}</b><span>${item.s}</span>`;
+    leafWrap.appendChild(el);
+  });
+}
+famBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    famBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderReceptorBranches(btn.dataset.fam);
+  });
+});
+renderReceptorBranches('cholinergic');
+
+/* ============================================================
+   ORGAN EFFECT EXPLORER
+============================================================ */
+const organData = [
+  {name:"Eye (pupil)", sym:"Dilates the pupil (radial muscle contracts).", para:"Constricts the pupil (circular muscle contracts)."},
+  {name:"Lacrimal / salivary", sym:"Weak stimulation of salivary flow; no effect on tear glands.", para:"Strong stimulation of salivary flow; stimulates tear glands."},
+  {name:"Heart", sym:"Accelerates heart rate and raises blood pressure.", para:"Slows heart rate (inhibits) and reduces blood pressure."},
+  {name:"Bronchial tree", sym:"Dilates bronchi (bronchodilation).", para:"Constricts bronchi (bronchoconstriction)."},
+  {name:"Stomach", sym:"Inhibits motility and secretion.", para:"Stimulates motility and secretion."},
+  {name:"Intestine", sym:"Inhibits intestinal motility.", para:"Stimulates intestinal motility."},
+  {name:"Pancreas / adrenals", sym:"Inhibits pancreas; stimulates adrenal medulla output.", para:"Stimulates pancreatic secretion."},
+  {name:"Bladder neck", sym:"Contracts the bladder neck (retains urine).", para:"Relaxes the bladder neck (allows emptying)."},
+  {name:"Skin / sweat glands", sym:"Stimulates sweat glands (via ACh) and piloerection.", para:"No parasympathetic innervation."},
+  {name:"Blood vessels", sym:"Sole innervation — controls vasoconstriction/dilation.", para:"No parasympathetic innervation."},
+  {name:"Spleen", sym:"Sole innervation — sympathetic only.", para:"No parasympathetic innervation."},
+];
+const organGrid = document.getElementById('organGrid');
+const organDetail = document.getElementById('organDetail');
+function renderOrganDetail(o){
+  organDetail.innerHTML = `
+    <div class="organ-panel sym"><h5>Sympathetic</h5><p>${o.sym}</p></div>
+    <div class="organ-panel para"><h5>Parasympathetic</h5><p>${o.para}</p></div>
+  `;
+}
+organData.forEach((o,i)=>{
+  const chip=document.createElement('div');
+  chip.className='organ-chip'+(i===0?' active':'');
+  chip.textContent=o.name;
+  chip.addEventListener('click', ()=>{
+    organGrid.querySelectorAll('.organ-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    renderOrganDetail(o);
+  });
+  organGrid.appendChild(chip);
+});
+renderOrganDetail(organData[0]);
+
+/* ============================================================
+   ACCORDION STEP BUILDER (reusable)
+============================================================ */
+function buildSteps(containerId, steps){
+  const wrap = document.getElementById(containerId);
+  steps.forEach((s,i)=>{
+    const el=document.createElement('div');
+    el.className='step';
+    el.innerHTML = `
+      <div class="step-head">
+        <span class="step-num">${i+1}</span>
+        <span class="step-title">${s.t}</span>
+        <span class="chev">▾</span>
+      </div>
+      <div class="step-body"><p>${s.d}</p></div>
+    `;
+    el.querySelector('.step-head').addEventListener('click', ()=>{
+      el.classList.toggle('open');
+    });
+    wrap.appendChild(el);
+  });
+}
+buildSteps('achSteps', [
+  {t:"Synthesis", d:"Choline + Acetyl-CoA → Acetylcholine. Choline transport into the neuron is inhibited by hemicholinium."},
+  {t:"Vesicular storage", d:"ACh is taken up into synaptic vesicles, where it is protected from degradation."},
+  {t:"Release", d:"Ca²⁺ influx triggers vesicle fusion and exocytosis. Release is blocked by botulinum toxin (and increased by spider venom)."},
+  {t:"Receptor binding", d:"ACh binds postsynaptic nicotinic or muscarinic receptors, activating the effector response."},
+  {t:"Degradation", d:"Acetylcholinesterase rapidly hydrolyzes ACh in the synaptic cleft into choline + acetate."},
+  {t:"Recycling", d:"Choline is taken back up by the presynaptic neuron to resynthesize more ACh."},
+]);
+buildSteps('neSteps', [
+  {t:"Synthesis", d:"Tyrosine → DOPA → Dopamine → Norepinephrine. Hydroxylation of tyrosine is the rate-limiting step."},
+  {t:"Vesicular storage", d:"Dopamine enters the vesicle and is converted to NE, which is protected from degradation. Transport is inhibited by reserpine."},
+  {t:"Release", d:"Ca²⁺ influx causes vesicle fusion with the membrane (exocytosis). Blocked by guanethidine and bretylium."},
+  {t:"Receptor binding", d:"NE activates postsynaptic α or β adrenergic receptors."},
+  {t:"Reuptake", d:"Released NE is rapidly taken back into the neuron. Reuptake is inhibited by cocaine and imipramine."},
+  {t:"Metabolism", d:"NE is methylated by COMT and oxidized by MAO into inactive metabolites, excreted in urine."},
+]);
+buildSteps('releaseSteps', [
+  {t:"Action potential arrives", d:"The nerve impulse reaches the axon terminal."},
+  {t:"Voltage-gated Ca²⁺ channels open", d:"Depolarization opens Ca²⁺ channels, allowing calcium to enter the terminal."},
+  {t:"Ca²⁺ binds sensor protein", d:"Calcium binds a cytoplasmic sensor protein, forming a Ca²⁺–protein complex."},
+  {t:"Docking, fusion & exocytosis", d:"The SNARE complex docks the vesicle to the membrane; the Ca²⁺–protein complex triggers fusion and release of neurotransmitter into the cleft."},
+]);
+
+/* ============================================================
+   MINI MAP
+============================================================ */
+const mapTopics = [
+  {x:50,y:12, title:"Divisions", bullets:[
+    "Sympathetic = fight/flight, paravertebral ganglia, diffuse (1→many) response.",
+    "Parasympathetic = rest/digest, ganglia at the organ, discrete (1→1) response.",
+    "Parasympathetic activity is essential for life; sympathetic activity is a stress response."
+  ]},
+  {x:76.9,y:23.1, title:"Ganglia & Fibers", bullets:[
+    "Sympathetic: short myelinated pre-, long unmyelinated postganglionic fiber.",
+    "Parasympathetic: long myelinated pre-, short unmyelinated postganglionic fiber.",
+    "Sympathetic exits CNS at thoracic & lumbar levels; parasympathetic at cranial & sacral levels."
+  ]},
+  {x:88,y:50, title:"Neurotransmitters", bullets:[
+    "Preganglionic (both divisions): Acetylcholine → nicotinic receptor.",
+    "Postganglionic parasympathetic: Acetylcholine → muscarinic receptor.",
+    "Postganglionic sympathetic: Norepinephrine (except sweat glands & skeletal muscle vessels = ACh).",
+    "Adrenal medulla chromaffin cells release mainly Epinephrine into the blood."
+  ]},
+  {x:76.9,y:76.9, title:"Cholinergic Receptors", bullets:[
+    "Nicotinic = ligand-gated ion channel → Na⁺/Ca²⁺ influx → depolarization.",
+    "Muscarinic = G protein-coupled receptor.",
+    "M1 ganglia, M2 heart, M3 glands/smooth muscle, M4/M5 mostly CNS."
+  ]},
+  {x:50,y:88, title:"Adrenergic Receptors", bullets:[
+    "α1 subtypes: α1A, α1B, α1D.",
+    "α2 subtypes: α2A, α2B, α2C.",
+    "β subtypes: β1, β2, β3.",
+    "NE and Epinephrine can each activate more than one receptor type."
+  ]},
+  {x:23.1,y:76.9, title:"Organ Effects", bullets:[
+    "Dual innervation: heart, eye, bronchial tree, GIT, urinary bladder, reproductive organs.",
+    "Sympathetic-only: blood vessels, spleen, piloerector muscles.",
+    "Effects mediated by whichever muscarinic or adrenergic receptor is present on that organ."
+  ]},
+  {x:12,y:50, title:"Neurotransmission Cycle", bullets:[
+    "ACh: synthesis → vesicle storage → Ca²⁺-triggered exocytosis → receptor binding → AChE degradation → choline recycling.",
+    "NE: tyrosine → DOPA → dopamine → NE → exocytosis → receptor binding → reuptake → COMT/MAO metabolism.",
+    "Toxins/drugs block specific steps: hemicholinium, botulinum toxin, reserpine, guanethidine, cocaine."
+  ]},
+  {x:23.1,y:23.1, title:"Exceptions & Rules", bullets:[
+    "The two divisions usually oppose each other; inhibiting one enhances the other's effect.",
+    "Some organs are innervated by only one branch (usually sympathetic).",
+    "Sympathetic preganglionic neurons synapse diffusely; parasympathetic synapse discretely."
+  ]},
+];
+const mapCanvas = document.getElementById('mapCanvas');
+const mapLines = document.getElementById('mapLines');
+mapTopics.forEach((topic,i)=>{
+  const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+  line.setAttribute('x1',50); line.setAttribute('y1',50);
+  line.setAttribute('x2',topic.x); line.setAttribute('y2',topic.y);
+  line.dataset.idx=i;
+  mapLines.appendChild(line);
+
+  const node=document.createElement('div');
+  node.className='map-node';
+  node.style.left=topic.x+'%'; node.style.top=topic.y+'%';
+  node.textContent=topic.title;
+  node.addEventListener('click', ()=>{
+    document.querySelectorAll('.map-node').forEach(n=>n.classList.remove('active'));
+    mapLines.querySelectorAll('line').forEach(l=>l.classList.remove('lit'));
+    node.classList.add('active');
+    line.classList.add('lit');
+    document.getElementById('mapDetail').innerHTML =
+      `<h4>${topic.title}</h4><ul>${topic.bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`;
+  });
+  mapCanvas.appendChild(node);
+});
+
+/* ============================================================
+   FLASHCARDS
+============================================================ */
+const flashcardData = [
+  {tag:"Divisions", f:"What is the sympathetic division nicknamed?", b:"\"Fight, flight or fright\" — the stress response."},
+  {tag:"Divisions", f:"What is the parasympathetic division nicknamed?", b:"\"Rest and digest\" — conservation of energy, essential for life."},
+  {tag:"Divisions", f:"Where are sympathetic ganglia mainly located?", b:"In the paravertebral chain near the spinal cord (some prevertebral, some near the organ)."},
+  {tag:"Divisions", f:"Where are parasympathetic ganglia located?", b:"Close to, or within, the organ they innervate."},
+  {tag:"Divisions", f:"Which division produces a diffuse response and why?", b:"Sympathetic — one preganglionic neuron synapses with many postganglionic neurons."},
+  {tag:"Divisions", f:"Which division produces a discrete, localized response and why?", b:"Parasympathetic — preganglionic neurons usually synapse with a single postganglionic neuron."},
+  {tag:"Fibers", f:"Describe sympathetic preganglionic and postganglionic fibers.", b:"Preganglionic: myelinated, shorter. Postganglionic: long, unmyelinated."},
+  {tag:"Fibers", f:"Describe parasympathetic preganglionic and postganglionic fibers.", b:"Preganglionic: myelinated and long. Postganglionic: short and unmyelinated."},
+  {tag:"Fibers", f:"At what spinal levels do sympathetic preganglionic fibers exit?", b:"Thoracic and lumbar levels (thoraco-lumbar outflow)."},
+  {tag:"Fibers", f:"At what levels do parasympathetic preganglionic fibers exit the CNS?", b:"Cranial and sacral levels (cranio-sacral outflow)."},
+  {tag:"Transmitters", f:"What neurotransmitter is released by ALL preganglionic neurons (both divisions)?", b:"Acetylcholine (ACh), acting on nicotinic receptors."},
+  {tag:"Transmitters", f:"What neurotransmitter do parasympathetic postganglionic neurons release?", b:"Acetylcholine (ACh), acting on muscarinic receptors."},
+  {tag:"Transmitters", f:"What neurotransmitter do sympathetic postganglionic neurons usually release?", b:"Norepinephrine (NE), acting on adrenergic receptors."},
+  {tag:"Transmitters", f:"Name the two exceptions where sympathetic postganglionic transmission uses ACh instead of NE.", b:"Sweat glands and blood vessels of skeletal muscle."},
+  {tag:"Transmitters", f:"What does the adrenal medulla release, and from which cells?", b:"Chromaffin cells release mainly Epinephrine directly into the bloodstream."},
+  {tag:"Receptors", f:"What type of receptor is the nicotinic receptor, mechanistically?", b:"A ligand-gated ion channel that allows Na⁺ and Ca²⁺ entry, causing depolarization."},
+  {tag:"Receptors", f:"What type of receptor is the muscarinic receptor, mechanistically?", b:"A G protein-coupled receptor that activates downstream G-protein effects (can hyperpolarize via K⁺ efflux)."},
+  {tag:"Receptors", f:"Where are ganglionic nicotinic receptors found, and how do they differ from NMJ receptors?", b:"At sympathetic and parasympathetic ganglia (similar to CNS/immune cell receptors); a different subtype from the nicotinic receptor at the skeletal muscle NMJ."},
+  {tag:"Receptors", f:"List the muscarinic receptor subtypes and one key location for each.", b:"M1 = ganglia (modulates nicotinic effect), M2 = heart, M3 = glands/smooth muscle, M4 & M5 = mainly CNS."},
+  {tag:"Receptors", f:"List the adrenergic receptor families and their subtypes.", b:"α1 (α1A, α1B, α1D), α2 (α2A, α2B, α2C), and β (β1, β2, β3)."},
+  {tag:"Receptors", f:"Can norepinephrine and epinephrine activate more than one receptor type?", b:"Yes — both can activate multiple adrenergic receptor subtypes."},
+  {tag:"Organs", f:"Effect of sympathetic activation on heart rate and blood pressure?", b:"Increases (elevates) heart rate and blood pressure."},
+  {tag:"Organs", f:"Effect of parasympathetic activation on heart rate and blood pressure?", b:"Reduces heart rate and blood pressure."},
+  {tag:"Organs", f:"Effect of sympathetic activation on the pupil?", b:"Dilates the pupil."},
+  {tag:"Organs", f:"Effect of parasympathetic activation on the pupil?", b:"Constricts the pupil."},
+  {tag:"Organs", f:"Effect of sympathetic activation on the bronchial tree?", b:"Dilates the bronchioles (bronchodilation)."},
+  {tag:"Organs", f:"Effect of parasympathetic activation on the bronchial tree?", b:"Constricts the bronchial tree (bronchoconstriction)."},
+  {tag:"Organs", f:"Effect of sympathetic activation on the bladder neck?", b:"Contracts the bladder neck."},
+  {tag:"Organs", f:"Effect of parasympathetic activation on the bladder neck?", b:"Relaxes the bladder neck, allowing emptying."},
+  {tag:"Organs", f:"Which organs are innervated only by the sympathetic branch?", b:"Blood vessels, the spleen, and piloerector muscles."},
+  {tag:"Organs", f:"Name organs innervated by BOTH sympathetic and parasympathetic divisions.", b:"Heart, eye, bronchial tree, GIT, urinary bladder, reproductive organs."},
+  {tag:"Cycle", f:"What is the rate-limiting step of norepinephrine synthesis?", b:"Hydroxylation of tyrosine (to DOPA)."},
+  {tag:"Cycle", f:"What blocks ACh release at the nerve terminal?", b:"Botulinum toxin."},
+  {tag:"Cycle", f:"What blocks choline reuptake/transport for ACh synthesis?", b:"Hemicholinium."},
+  {tag:"Cycle", f:"What enzyme degrades ACh in the synaptic cleft?", b:"Acetylcholinesterase (AChE), producing choline + acetate."},
+  {tag:"Cycle", f:"What blocks norepinephrine release from vesicles?", b:"Guanethidine and bretylium."},
+  {tag:"Cycle", f:"What blocks norepinephrine reuptake into the presynaptic neuron?", b:"Cocaine and imipramine."},
+  {tag:"Cycle", f:"How is norepinephrine ultimately metabolized?", b:"Methylated by COMT and oxidized by MAO into inactive metabolites."},
+  {tag:"Cycle", f:"What ion triggers vesicle docking, fusion and exocytosis at the nerve terminal?", b:"Calcium (Ca²⁺), via the SNARE complex."},
+  {tag:"Rules", f:"What is the general reciprocal rule between the two ANS divisions?", b:"If one division inhibits an effect in an organ, the other division enhances that same effect."},
+  {tag:"Rules", f:"Do sympathetic and parasympathetic always produce opposite effects?", b:"Generally yes, but there are exceptions where both produce similar responses."},
+];
+let fcFiltered = [...flashcardData];
+let fcIndex = 0;
+let fcFlipped = false;
+const fcCategories = ["All", ...new Set(flashcardData.map(c=>c.tag))];
+const fcFilterWrap = document.getElementById('fcFilters');
+fcCategories.forEach((cat,i)=>{
+  const chip=document.createElement('button');
+  chip.className='chip'+(i===0?' active':'');
+  chip.textContent=cat;
+  chip.addEventListener('click', ()=>{
+    fcFilterWrap.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    fcFiltered = cat==="All" ? [...flashcardData] : flashcardData.filter(c=>c.tag===cat);
+    fcIndex=0; fcFlipped=false;
+    renderFlashcard();
+  });
+  fcFilterWrap.appendChild(chip);
+});
+function renderFlashcard(){
+  const card = fcFiltered[fcIndex];
+  document.getElementById('fcTagFront').textContent = card.tag;
+  document.getElementById('fcTagBack').textContent = card.tag;
+  document.getElementById('fcFront').textContent = card.f;
+  document.getElementById('fcBack').textContent = card.b;
+  document.getElementById('fcProgress').textContent = `${fcIndex+1} / ${fcFiltered.length}`;
+  document.getElementById('flashcard').classList.toggle('flipped', fcFlipped);
+}
+document.getElementById('flashcard').addEventListener('click', ()=>{
+  fcFlipped = !fcFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped', fcFlipped);
+});
+document.getElementById('fcFlip').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  fcFlipped = !fcFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped', fcFlipped);
+});
+document.getElementById('fcPrev').addEventListener('click', ()=>{
+  fcIndex = (fcIndex-1+fcFiltered.length)%fcFiltered.length;
+  fcFlipped=false; renderFlashcard();
+});
+document.getElementById('fcNext').addEventListener('click', ()=>{
+  fcIndex = (fcIndex+1)%fcFiltered.length;
+  fcFlipped=false; renderFlashcard();
+});
+document.getElementById('fcShuffle').addEventListener('click', ()=>{
+  for(let i=fcFiltered.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [fcFiltered[i],fcFiltered[j]]=[fcFiltered[j],fcFiltered[i]];
+  }
+  fcIndex=0; fcFlipped=false; renderFlashcard();
+});
+renderFlashcard();
+
+/* ============================================================
+   QUIZ BANK — 35 MCQs, options shuffled each run
+============================================================ */
+const quizBank = [
+  {q:"Which division of the ANS is described as \"fight, flight or fright\"?", opts:["Sympathetic","Parasympathetic","Somatic","Enteric"], ans:0},
+  {q:"Which division of the ANS is described as \"rest and digest\"?", opts:["Somatic","Parasympathetic","Sympathetic","Central"], ans:1},
+  {q:"The autonomic nervous system is a subdivision of which system?", opts:["Peripheral nervous system","Endocrine system","Central nervous system","Skeletal system"], ans:0},
+  {q:"The somatic nervous system is mainly responsible for:", opts:["Emotions and memory","Voluntary muscle movement","Gland secretion","Heart rate control"], ans:1},
+  {q:"Sympathetic ganglia are typically located:", opts:["Inside the effector organ","In the paravertebral chain near the spinal cord","In the brainstem","In skeletal muscle"], ans:1},
+  {q:"Parasympathetic ganglia are typically located:", opts:["In the paravertebral chain","Far from the target organ","Close to or within the organ innervated","In the adrenal medulla"], ans:2},
+  {q:"Parasympathetic preganglionic fibers are:", opts:["Short and unmyelinated","Myelinated and long","Non-myelinated and long","Absent"], ans:1},
+  {q:"Parasympathetic postganglionic fibers are:", opts:["Long and myelinated","Short and unmyelinated","Long and unmyelinated","Absent"], ans:1},
+  {q:"Sympathetic postganglionic fibers are:", opts:["Short and myelinated","Long and unmyelinated","Short and unmyelinated","Myelinated and long"], ans:1},
+  {q:"Sympathetic preganglionic neurons exit the spinal cord at which levels?", opts:["Cranial and sacral","Cervical only","Thoracic and lumbar","Lumbar and sacral"], ans:2},
+  {q:"Parasympathetic preganglionic neurons exit the CNS at which levels?", opts:["Thoracic and lumbar","Cranial and sacral","Cervical and thoracic","Lumbar only"], ans:1},
+  {q:"The neurotransmitter released by ALL autonomic preganglionic neurons is:", opts:["Norepinephrine","Dopamine","Acetylcholine","Epinephrine"], ans:2},
+  {q:"The postganglionic neurotransmitter of the parasympathetic system is:", opts:["Norepinephrine","Acetylcholine","Epinephrine","Serotonin"], ans:1},
+  {q:"The typical postganglionic neurotransmitter of the sympathetic system is:", opts:["Acetylcholine","Dopamine","Norepinephrine","GABA"], ans:2},
+  {q:"Which effectors receive sympathetic innervation via ACh instead of norepinephrine?", opts:["Heart and lungs","Sweat glands and skeletal muscle blood vessels","Eye and salivary glands","Kidneys and bladder"], ans:1},
+  {q:"The adrenal medulla's chromaffin cells mainly secrete:", opts:["Norepinephrine only","Dopamine","Epinephrine","Acetylcholine"], ans:2},
+  {q:"A single sympathetic preganglionic neuron tends to produce a response that is:", opts:["Discrete and localized","Diffuse, affecting many postganglionic neurons","Absent","Restricted to one organ only"], ans:1},
+  {q:"Parasympathetic preganglionic neurons typically synapse with:", opts:["Many postganglionic neurons","A single postganglionic neuron","No postganglionic neuron","Only skeletal muscle"], ans:1},
+  {q:"Sympathetic stimulation of the heart causes:", opts:["Decreased heart rate and blood pressure","Increased heart rate and blood pressure","No change","Cardiac arrest"], ans:1},
+  {q:"Parasympathetic stimulation of the heart causes:", opts:["Increased heart rate and BP","Reduced heart rate and BP","Increased contractility only","Arrhythmia"], ans:1},
+  {q:"Sympathetic stimulation causes the pupil to:", opts:["Constrict","Dilate","Stay the same","Close completely"], ans:1},
+  {q:"Parasympathetic stimulation causes the pupil to:", opts:["Dilate","Remain fixed","Constrict","Rotate"], ans:2},
+  {q:"Sympathetic stimulation of the bronchial tree causes:", opts:["Bronchoconstriction","Bronchodilation","No effect","Mucus hypersecretion only"], ans:1},
+  {q:"Parasympathetic stimulation of the bronchial tree causes:", opts:["Bronchodilation","Bronchoconstriction","Bronchial paralysis","No effect"], ans:1},
+  {q:"Regarding the bladder neck, sympathetic activation:", opts:["Relaxes it","Contracts it","Has no effect on it","Destroys it"], ans:1},
+  {q:"Regarding the bladder neck, parasympathetic activation:", opts:["Contracts it","Relaxes it, allowing emptying","Has no effect on it","Only affects males"], ans:1},
+  {q:"Which of the following organs receives ONLY sympathetic innervation?", opts:["Heart","Blood vessels","Bronchial tree","Urinary bladder"], ans:1},
+  {q:"Which of the following organs is innervated by BOTH sympathetic and parasympathetic divisions?", opts:["Spleen","Piloerector muscles","Heart","Peripheral blood vessels"], ans:2},
+  {q:"Nicotinic cholinergic receptors function as:", opts:["G protein-coupled receptors","Ligand-gated ion channels","Enzyme-linked receptors","Nuclear receptors"], ans:1},
+  {q:"Muscarinic cholinergic receptors function as:", opts:["Ligand-gated ion channels","G protein-coupled receptors","Voltage-gated channels only","Ionotropic glutamate receptors"], ans:1},
+  {q:"Activation of a nicotinic receptor by ACh typically causes:", opts:["Hyperpolarization via K⁺ efflux","Depolarization via Na⁺/Ca²⁺ influx","No change in membrane potential","Chloride influx and inhibition"], ans:1},
+  {q:"Muscarinic receptor subtypes are labeled:", opts:["α1 to α3", "M1 to M5", "β1 to β5", "N1 to N4"], ans:1},
+  {q:"Which muscarinic receptor subtype predominates in the heart?", opts:["M1","M2","M3","M5"], ans:1},
+  {q:"Which muscarinic receptor subtype predominates in glands and smooth muscle?", opts:["M2","M3","M4","M1"], ans:1},
+  {q:"M1 muscarinic receptors are located at the autonomic ganglia and:", opts:["Directly cause skeletal muscle contraction","Modulate the effect of nicotinic receptor activation","Have no known function","Only exist in the kidney"], ans:1},
+  {q:"Adrenergic β receptors include which subtypes?", opts:["β1, β2, β3","βA, βB, βC","β1 only","β1 and β4"], ans:0},
+  {q:"Adrenergic α1 receptors include which subtypes?", opts:["α1A, α1B, α1D","α1X, α1Y","α1 only, no subtypes","α1 and α4"], ans:0},
+  {q:"The rate-limiting step in norepinephrine synthesis is:", opts:["Conversion of dopamine to NE","Hydroxylation of tyrosine","Release from the vesicle","Reuptake by the neuron"], ans:1},
+  {q:"Which drug class blocks norepinephrine release from the presynaptic vesicle?", opts:["Hemicholinium","Botulinum toxin","Guanethidine and bretylium","Acetylcholinesterase inhibitors"], ans:2},
+  {q:"Reuptake of norepinephrine into the presynaptic neuron is inhibited by:", opts:["Cocaine and imipramine","Botulinum toxin","Hemicholinium","Muscarine"], ans:0},
+  {q:"Norepinephrine is metabolized mainly by which two enzymes?", opts:["AChE and BuChE","COMT and MAO","Lipase and amylase","Kinase and phosphatase"], ans:1},
+  {q:"Transport of choline into the presynaptic neuron (for ACh synthesis) is blocked by:", opts:["Reserpine","Hemicholinium","Guanethidine","Cocaine"], ans:1},
+  {q:"Release of acetylcholine from the nerve terminal is blocked by:", opts:["Botulinum toxin","Cocaine","COMT","Reserpine"], ans:0},
+  {q:"Acetylcholine is degraded in the synaptic cleft by:", opts:["COMT","Monoamine oxidase (MAO)","Acetylcholinesterase","Tyrosine hydroxylase"], ans:2},
+  {q:"The general functional rule between the two ANS divisions in a shared organ is:", opts:["They always act identically","If one inhibits an effect, the other enhances it","They never interact","Only one division is ever active per organ"], ans:1},
+  {q:"Calcium influx at the nerve terminal triggers neurotransmitter release primarily through:", opts:["Opening of ligand-gated sodium channels only","The SNARE complex-mediated docking, fusion and exocytosis of vesicles","Direct diffusion through the membrane","Activation of acetylcholinesterase"], ans:1},
+];
+
+let quizOrder = quizBank.map((_,i)=>i);
+let quizCurrent = 0;
+let quizScore = 0;
+let quizShuffledOptions = [];
+
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function prepQuestion(idx){
+  const item = quizBank[idx];
+  const opts = item.opts.map((text,i)=>({text, correct:i===item.ans}));
+  return shuffleArray(opts);
+}
+
+function renderQuiz(){
+  const quizArea = document.getElementById('quizArea');
+  if(quizCurrent >= quizOrder.length){
+    quizArea.innerHTML = `
+      <div class="card quiz-summary">
+        <h3>Quiz complete</h3>
+        <p>You scored ${quizScore} out of ${quizOrder.length}.</p>
+        <div class="quiz-actions">
+          <button class="btn primary" id="quizRestart">Run again</button>
+        </div>
+      </div>`;
+    document.getElementById('quizMeter').style.width='100%';
+    document.getElementById('quizScoreLine').textContent = `Finished · Score ${quizScore} / ${quizOrder.length}`;
+    document.getElementById('quizRestart').addEventListener('click', startQuiz);
+    return;
+  }
+  const realIdx = quizOrder[quizCurrent];
+  const item = quizBank[realIdx];
+  const shuffled = prepQuestion(realIdx);
+  quizShuffledOptions = shuffled;
+
+  document.getElementById('quizMeter').style.width = `${(quizCurrent/quizOrder.length)*100}%`;
+  document.getElementById('quizScoreLine').textContent = `Question ${quizCurrent+1} of ${quizOrder.length} · Score ${quizScore}`;
+
+  const letters = ['A','B','C','D'];
+  quizArea.innerHTML = `
+    <div class="card q-card">
+      <div class="q-num">Question ${quizCurrent+1}</div>
+      <p class="q-text">${item.q}</p>
+      <div class="opt-list" id="optList">
+        ${shuffled.map((o,i)=>`
+          <div class="opt" data-i="${i}">
+            <span class="letter">${letters[i]}</span>
+            <span>${o.text}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+  `;
+  document.querySelectorAll('#optList .opt').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const i = parseInt(el.dataset.i);
+      const chosenCorrect = quizShuffledOptions[i].correct;
+      document.querySelectorAll('#optList .opt').forEach((o2,i2)=>{
+        o2.classList.add('disabled');
+        if(quizShuffledOptions[i2].correct) o2.classList.add('correct');
+        else if(i2===i) o2.classList.add('wrong');
+      });
+      if(chosenCorrect) quizScore++;
+      setTimeout(()=>{
+        quizCurrent++;
+        renderQuiz();
+      }, 750);
+    });
+  });
+}
+
+function startQuiz(){
+  quizOrder = shuffleArray(quizBank.map((_,i)=>i));
+  quizCurrent = 0;
+  quizScore = 0;
+  renderQuiz();
+}
+startQuiz();
+</script>
+</body>
+</html>
